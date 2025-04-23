@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
+from keras.models import load_model
+loaded_model= load_model('parkinson_neural_model.h5')
 
 app = Flask(__name__)
 
@@ -40,7 +42,11 @@ def predict():
         input_pca = pca.transform(input_scaled)
 
         # Make prediction
-        prediction = model.predict(input_pca)[0]
+        out = loaded_model.predict(input_pca)[0]
+        if out>0.5:
+            prediction=1
+        else:
+            prediction=0
 
         # Return result page
         return render_template("result.html", prediction=prediction)
